@@ -6,13 +6,32 @@ import 'package:flutter/material.dart';
 
 class TextBloc extends Bloc<TextEvent, TextState> {
   TextBloc() : super(TextInitial(text: 'Initial Text',color: Colors.black )) {
-    on<ChangeTextEvent>((event, emit) {
-
-      // Handle the event and emit a new state if needed
-      emit(SnackBarShown());
+    on<TextEvent>((event, emit) {
 
       // Handle the event and emit a new state with updated text
-      emit(TextInitial(text: 'Text Changed finally !',color:  Colors.red));
+      if (event is ChangeTextEvent) {
+        emit(TextInitial(text: 'Text Changed finally !', color: Colors.red));
+      }
+      else if(event is ShowSnackBarEvent){
+        // Handle the event and emit a new state if needed
+        emit(SnackBarShown());
+      }
+
     });
   }
 }
+
+// class TextBloc extends Bloc<TextEvent, TextState> {
+//   TextBloc() : super(TextInitial(text: 'Initial Text',color: Colors.black ));
+//
+//   @override
+//   Stream<TextState> mapEventToState(TextEvent event) async* {
+//     if (event is ShowSnackBarEvent) {
+//       // Add logic to handle ShowSnackBarEvent
+//       yield SnackBarShown();
+//     } else if (event is ChangeTextEvent) {
+//       // Add logic to handle ChangeTextEvent
+//     }
+//   }
+// }
+
