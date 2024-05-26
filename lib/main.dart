@@ -5,6 +5,9 @@ import 'package:bloc_text_change/bloc/dropdown_bloc.dart';
 import 'package:bloc_text_change/bloc/dropdown_event.dart';
 import 'package:bloc_text_change/bloc/dropdown_state.dart';
 import 'package:bloc_text_change/bloc/option_string.dart';
+import 'package:bloc_text_change/bloc/text_input_bloc.dart';
+import 'package:bloc_text_change/bloc/text_input_event.dart';
+import 'package:bloc_text_change/bloc/textinput_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,6 +25,7 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider(create: (context) => DropdownBloc()),
           BlocProvider(create: (context) => TextBloc()),
+          BlocProvider(create: (context) => TextInputBloc()),
         ],
         child: const TextChangeScreen(),
       ),
@@ -34,8 +38,10 @@ class TextChangeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textInputBloc = BlocProvider.of<TextInputBloc>(context);
     final textBloc = BlocProvider.of<TextBloc>(context);
     final dropdownBloc = BlocProvider.of<DropdownBloc>(context);
+
 
     return Scaffold(
       appBar: AppBar(title: const Text('Flutter Bloc Example')),
@@ -44,7 +50,35 @@ class TextChangeScreen extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+        Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: BlocBuilder<TextInputBloc, TextInputState>(
+          builder: (context, state) {
+            String text = '';
+            if (state is TextInputInitial) {
+              text = state.text;
+            }
 
+            return TextField(
+              onChanged: (newText) {
+                textInputBloc.add(TextChanged(newText));
+              },
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Enter text',
+              ),
+              controller: TextEditingController.fromValue(
+                TextEditingValue(
+                  text: text,
+                  selection: TextSelection.fromPosition(
+                    TextPosition(offset: text.length),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
             // DropdownBloc
             BlocBuilder<DropdownBloc, DropdownState>(
               builder: (context, state) {
